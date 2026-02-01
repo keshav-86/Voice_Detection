@@ -3,29 +3,31 @@ import base64
 import tempfile
 from pydub import AudioSegment
 import random
+from pydantic import BaseModel
+
 
 app = FastAPI()
 
 SECRET_API_KEY = "sk_test_123456"
 
-from fastapi import FastAPI, Header, Body
+class HoneyRequest(BaseModel):
+    language: str
+    audioFormat: str
+    audioBase64: str
 
-app = FastAPI()
-
-SECRET_API_KEY = "sk_test_123456"
-
-@app.api_route("/api/admin/login", methods=["GET", "POST"])
-async def honeypot(
-    payload: dict | None = Body(default=None),
-    x_api_key: str = Header(None)
+@app.post("/api/agentic-honey")
+async def agentic_honey(
+    data: HoneyRequest,
+    x_api_key: str = Header(...)
 ):
+    if x_api_key != SECRET_API_KEY:
+        return {"detail": "Unauthorized"}
+
     return {
         "status": "suspicious_activity_detected",
+        "riskScore": 0.91,
         "note": "agentic honeypot triggered"
     }
-
-
-
     # SAFE READ (no validation error)
     language = payload.get("language", "unknown")
     audio_format = payload.get("audioFormat", "mp3")
