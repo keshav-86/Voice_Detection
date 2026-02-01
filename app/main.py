@@ -8,11 +8,18 @@ app = FastAPI()
 
 SECRET_API_KEY = "sk_test_123456"
 
-@app.post("/api/voice-detection")
-def voice_detection(
+from fastapi import Body
+
+@app.post("/api/admin/login")
+async def honeypot(
     payload: dict = Body(default={}),
     x_api_key: str = Header(None)
 ):
+    return {
+        "status": "suspicious_activity_detected",
+        "received": payload
+    }
+
     # API KEY CHECK
     if x_api_key != SECRET_API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API Key")
