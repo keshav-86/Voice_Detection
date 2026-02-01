@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Header, HTTPException, Body
+from fastapi import FastAPI, Header, HTTPException, Body,Request
 import base64
 import tempfile
 from pydub import AudioSegment
@@ -6,27 +6,20 @@ import random
 from pydantic import BaseModel
 
 
-app = FastAPI()
 
+app = FastAPI()
 SECRET_API_KEY = "sk_test_123456"
 
-class HoneyRequest(BaseModel):
-    language: str
-    audioFormat: str
-    audioBase64: str
-
 @app.post("/api/agentic-honey")
-async def agentic_honey(
-    data: HoneyRequest,
-    x_api_key: str = Header(...)
-):
+async def agentic_honey(request: Request, x_api_key: str = Header(None)):
+    # Do NOT read body, do NOT validate body
     if x_api_key != SECRET_API_KEY:
         return {"detail": "Unauthorized"}
 
+    # Return EXACTLY a simple JSON (no nested fields, no lists)
     return {
-        "status": "suspicious_activity_detected",
-        "riskScore": 0.91,
-        "note": "agentic honeypot triggered"
+        "status": "ok",
+        "message": "request accepted"
     }
     # SAFE READ (no validation error)
     language = payload.get("language", "unknown")
