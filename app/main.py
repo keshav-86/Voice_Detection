@@ -8,21 +8,23 @@ app = FastAPI()
 
 SECRET_API_KEY = "sk_test_123456"
 
-from fastapi import Body
+from fastapi import FastAPI, Header, Body
 
-@app.post("/api/admin/login")
+app = FastAPI()
+
+SECRET_API_KEY = "sk_test_123456"
+
+@app.api_route("/api/admin/login", methods=["GET", "POST"])
 async def honeypot(
-    payload: dict = Body(default={}),
+    payload: dict | None = Body(default=None),
     x_api_key: str = Header(None)
 ):
     return {
         "status": "suspicious_activity_detected",
-        "received": payload
+        "note": "agentic honeypot triggered"
     }
 
-    # API KEY CHECK
-    if x_api_key != SECRET_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API Key")
+
 
     # SAFE READ (no validation error)
     language = payload.get("language", "unknown")
